@@ -14,26 +14,33 @@ const getFavouritesBtn = document.getElementById("getFavouritesBtn");
 const API_KEY = "live_UShNr4vS3QnUCOtwgU992ZN37F9ZvV9PIA3OgIsfXbP1OxoVZsrNmW8xf9LXih82";
 
 //1. Create an async function "initialLoad" that does the following:
-async function initialLoad(){
-// - Retrieve a list of breeds from the cat API using fetch().
-let apiData = await fetch(("https://api.thecatapi.com/v1/breeds"));
-//// Convert the apiData to JSON, which gives us an array of breed objects
-let jsonData = await apiData.json();
-//  - Create new <options> for each of these breeds, and append them to breedSelect.
-jsonData.forEach(data => {
-  let option = document.createElement("option");
-//  - Each option should have a value attribute equal to the id of the breed.
-option.value = data.id;
-//  - Each option should display text equal to the name of the breed.
-option.textContent = data.name;
-// Append the option to the breedSelect element
-breedSelect.appendChild(option);
-//  -This function should execute immediately.
-});
-// Return a message indicating that the function has completed
-return "initialLoad completed";
+async function initialLoad() {
+  // - Retrieve a list of breeds from the cat API using fetch().
+  let apiData = await fetch(("https://api.thecatapi.com/v1/breeds"));
+  //// Convert the apiData to JSON, which gives us an array of breed objects
+  let jsonData = await apiData.json();
+  //  - Create new <options> for each of these breeds, and append them to breedSelect.
+
+  // Create a default option and append it to breedSelect
+  let defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = "Select a breed";
+  breedSelect.appendChild(defaultOption);
+  // Iterate over each jsonData breed object in the array
+  jsonData.forEach(data => {
+    let option = document.createElement("option");
+    //  - Each option should have a value attribute equal to the id of the breed.
+    option.value = data.id;
+    //  - Each option should display text equal to the name of the breed.
+    option.textContent = data.name;
+    // Append the option to the breedSelect element
+    breedSelect.appendChild(option);
+    //  -This function should execute immediately.
+  });
+  // Return a message indicating that the function has completed
+  return "initialLoad completed";
 }
-initialLoad().then((x) =>{
+initialLoad().then((x) => {
   console.log(x)
 });
 
@@ -52,6 +59,7 @@ initialLoad().then((x) =>{
  * - Each new selection should clear, re-populate, and restart the Carousel.
  * - Add a call to this function to the end of your initialLoad function above to create the initial carousel.
  */
+
 
 /**
  * 3. Fork your own sandbox, creating a new one named "JavaScript Axios Lab."

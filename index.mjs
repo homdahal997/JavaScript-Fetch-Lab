@@ -1,5 +1,6 @@
 import * as Carousel from "./carousel.mjs";
 //import axios from "axios";
+// import 'bootstrap/dist/css/bootstrap.min.css';
 
 // The breed selection input element.
 const breedSelect = document.getElementById("breedSelect");
@@ -16,16 +17,16 @@ const API_KEY = "live_UShNr4vS3QnUCOtwgU992ZN37F9ZvV9PIA3OgIsfXbP1OxoVZsrNmW8xf9
 //1. Create an async function "initialLoad" that does the following:
 async function initialLoad() {
   // - Retrieve a list of breeds from the cat API using fetch().
-  let apiData = await fetch(("https://api.thecatapi.com/v1/breeds"));
+  let apiData = await fetch((`https://api.thecatapi.com/v1/breeds/?api_key=${API_KEY}`));
   //// Convert the apiData to JSON, which gives us an array of breed objects
   let jsonData = await apiData.json();
   //  - Create new <options> for each of these breeds, and append them to breedSelect.
 
   // Create a default option and append it to breedSelect
   let defaultOption = document.createElement("option");
-  defaultOption.value = "";
-  defaultOption.textContent = "Select a breed";
-  breedSelect.appendChild(defaultOption);
+  // defaultOption.value = "";
+  // defaultOption.textContent = "Select a breed";
+  // breedSelect.appendChild(defaultOption);
   // Iterate over each jsonData breed object in the array
   jsonData.forEach(data => {
     let option = document.createElement("option");
@@ -38,12 +39,9 @@ async function initialLoad() {
     //  -This function should execute immediately.
   });
   // Return a message indicating that the function has completed
+  //return "initialLoad completed";
   return "initialLoad completed";
 }
-initialLoad().then((x) => {
-  console.log(x)
-});
-
 
 /**
  * 2. Create an event handler for breedSelect that does the following:
@@ -59,6 +57,44 @@ initialLoad().then((x) => {
  * - Each new selection should clear, re-populate, and restart the Carousel.
  * - Add a call to this function to the end of your initialLoad function above to create the initial carousel.
  */
+breedSelect.addEventListener("change", async (evt) => {
+  // If the selected value is empty, return from the function
+  if (evt.target.value === "") {
+    Carousel.clear();
+  }
+
+  let apiData = await fetch(`https://api.thecatapi.com/v1/images/search?limit=3&breed_ids=${evt.target.value}&api_key=${API_KEY}`);
+  let jsonData = await apiData.json();
+  //console.log(typeof jsonData);
+  let carouselInnerEl = document.getElementById("carouselInner");
+  let infoTitle = document.createElement("h5");
+  let infoText = document.createElement("p");
+
+  // Clear the carousel before adding new images
+  Carousel.clear();
+  carouselInnerEl.innerHTML = "";
+  infoDump.innerHTML = "";
+  jsonData.forEach(data => {
+    let image = document.createElement("img");
+    image.src = data.url;
+    image.classList.add("carousel-inner", "card");
+    carouselInnerEl.append(image);
+    infoTitle.classList.add("card-title", "text-center");
+    infoTitle.innerText = `${jsonData[0].breeds[0].name}`;
+    infoText.classList.add("card-text");
+    infoText.innerText = jsonData[0].breeds[0].description;
+    infoDump.classList.add("card", "w-75");
+    infoDump.append(infoTitle, infoText);
+    //Carousel.start();
+  });
+  Carousel.start();
+});
+
+
+initialLoad().then((x) => {
+  console.log(x)
+});
+
 
 
 /**
@@ -73,6 +109,7 @@ initialLoad().then((x) => {
  *   by setting a default header with your API key so that you do not have to
  *   send it manually with all of your requests! You can also set a default base URL!
  */
+
 /**
  * 5. Add axios interceptors to log the time between request and response to the console.
  * - Hint: you already have access to code that does this!
